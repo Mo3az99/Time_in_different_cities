@@ -1,5 +1,5 @@
 #include "lcd.h"
-
+#include "main.h"
 
 void LCD_init() {
 
