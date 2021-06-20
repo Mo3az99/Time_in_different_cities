@@ -29,4 +29,5 @@
   C:\Users\lenovo\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\10.3.1\Source\include\semphr.h \
   C:\Users\lenovo\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\10.3.1\Source\include\queue.h \
   C:\Users\lenovo\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\10.3.1\Source\include\task.h \
-  lcd.h uart.h
+  lcd.h C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\ctype.h \
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h uart.h

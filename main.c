@@ -16,7 +16,7 @@ static char cities[][10] = {"London", "Paris", "Madrid", "Rome", "Athens", "Anka
 static char timediff[] = {0, 1, 1, 1, 2, 2, 2, 2, 3, 4};
 
 static char cBuffer[ mainMAX_MSG_LEN ];
-unsigned int selection;
+volatile unsigned int selection;
 
 /* Declare variables of type xQueueHandle. */
 xQueueHandle xQueue1;
@@ -28,12 +28,14 @@ int main( void )
 	// Create the queues
 	xQueue1 = xQueueCreate(1, 8);
   xQueue2 = xQueueCreate(1, 8);
-	
+  SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
+  LCD_init();
+	UART0_Init();
 	// Create the tasks
-	xTaskCreate(Task1, "Time Controller", 100, NULL, 1, NULL);
-	//xTaskCreate(Task2, "LCD Controller", 100, NULL, 1, NULL);
-	xTaskCreate(Task3, "UART Controller", 100, NULL, 1, NULL);
-	
+	xTaskCreate(Task1, "Time Controller", 250, NULL, 1, NULL);
+	xTaskCreate(Task2, "LCD Controller", 250, NULL, 1, NULL);
+	xTaskCreate(Task3, "UART Controller", 250, NULL, 1, NULL);
+
 	vTaskStartScheduler();
 }
 
@@ -85,6 +87,7 @@ unsigned int Read_From_Keyboard()
 	while(1)
 	{
 		N = UART0_Read();					// Read a char
+		printChar(N);
 		if (N == '\r') break;			// If enter
 		N = N - '0';							// Pure number (corresponding number of the char)
 		Total = 10 * Total + N;		// Total number
@@ -102,6 +105,7 @@ void Read_Time(char buf[])
 	while(1)
 	{
 		c = UART0_Read();				// Read a char
+		printChar(c);
 		if (c == '\r') break;		// If Enter
 		buf[k] = c;							// Save char
 		k++;										// Increment pointer
@@ -112,7 +116,61 @@ void Read_Time(char buf[])
 // LCD controller
 static void Task2(void *pvParameters)
 {
-	
+	 char Txt[7];
+    typedef struct Message
+    {
+        unsigned char hours;
+        unsigned char minutes;
+        unsigned char seconds;
+    } AMessage;
+    AMessage Tim;
+    LCD_init();       																					//Initialize LCD
+    LCD_Clear();                				                        //Clear LCD
+    selection = 0;                                              //Clear selection
+    while (1)
+    {
+        xQueueReceive(xQueue1, &Tim, portMAX_DELAY);            //Get time
+    //    Lcd_out(1, 1, cities[selection]);                       //Display city
+						LCD_Clear();  
+				LCD_PrintColumn(0,cities[selection]);										// need test 
+
+        Tim.hours = Tim.hours + timediff[selection];            //Hour adjustment
+        if (Tim.hours > 23)Tim.hours = Tim.hours - 24;          //if > 24
+        ByteToStr(Tim.hours, Txt);                              //Convert to string   /////
+         trim(Txt);                                             //Romve spaces    /////
+        if (Tim.hours < 10)                                     //if <10
+        {
+            Txt[1] = Txt[0];                                    //Insert leading 0
+            Txt[0] = '0';
+            Txt[2] = '\0';                                      //NULL terminator
+        }
+      //  Lcd_out(2, 0, Txt);                                     //display hours
+				LCD_PrintColumn(1,Txt);
+				LCD_Show(':');
+      //  Lcd_out_CP(":");                                        //Colon
+
+        ByteToStr(Tim.minutes, Txt);                            //To strong
+        trim(Txt);                                             //remove spaves
+        if (Tim.minutes < 10)                                   //if < 10
+        {
+            Txt[1] = Txt[0];                                    //Insert leading 0
+            Txt[0] = '0';
+            Txt[2] = '\0';                                      //NULL terminator
+        }
+      //  Lcd_out_CP(Txt);                                        //Display minutes
+				LCD_print_Continous(Txt);																//Display minutes
+				LCD_Show(':');                                        	//colon
+
+        ByteToStr(Tim.seconds, Txt);                            //To string 
+        trim(Txt);                                             //remove spaces
+        if (Tim.seconds < 10)                                   //if < 10
+        {
+            Txt[1] = Txt[0];                                    //Insert leading 0
+            Txt[0] = '0';
+            Txt[2] = '\0';                                      //NULL terminator
+        }
+        LCD_print_Continous(Txt);                                        //Display seconds 
+    }
 }
 
 // UART controller
@@ -128,7 +186,7 @@ static void Task3(void *pvParameters)
 
 	AMessage Tim;
 	
-	UART0_Init();
+	//UART0_Init();
 	
 	UART0_Write_Text("Time in Different Countries\n\r");
 	UART0_Write_Text("===========================\n\r");
@@ -154,6 +212,7 @@ static void Task3(void *pvParameters)
 	 
 		selection = Read_From_Keyboard();
 		UART0_Write_Text("\r\n");
+		
 	
 	}
 }

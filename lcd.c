@@ -141,7 +141,20 @@ void LCD_Yaz(char* s){
     LCD_Command(0xC0 + 16); //Hide cursor
 }
 
+void LCD_PrintColumn(char i , char *s){
+	LCD_Cursor(i, 0);
+	  for (i=0; i<strlen(s); i++) {
+            LCD_Show(s[i]);
+        }
+		//LCD_Command(0xC0 + 16); //Hide cursor
+}
 
+void LCD_print_Continous(char *s){
+	for (int i=0; i<strlen(s); i++) {
+            LCD_Show(s[i]);
+        }
+		//LCD_Command(0xC0 + 16); //Hide cursor
+}
 void LCD_PrintJustify(char i, char *s, char *d) {
     if (i==0) {
         for (i=0; i<strlen(s); i++) {
@@ -181,10 +194,59 @@ void LCD_Print(char *s, char *d) {
     LCD_Command(0xC0 + 16); //Hide cursor
 }
 
+
 void LCD_PrintLn(char i, char *s) {
     LCD_Cursor(i, 0);
     for (i=0; i<strlen(s); i++) {
         LCD_Show(s[i]);
     }
     LCD_Command(0xC0 + 16); //Hide cursor
+}
+
+
+void ByteToStr (char a , char *s){
+	itoa(a,s); /* 10 for decimal */
+}
+ void reverse(char s[])
+ {
+     int i, j;
+     char c;
+
+     for (i = 0, j = strlen(s)-1; i<j; i++, j--) {
+         c = s[i];
+         s[i] = s[j];
+         s[j] = c;
+     }
+}  
+
+void itoa(int n, char s[])
+ {
+     int i, sign;
+
+     if ((sign = n) < 0)  /* record sign */
+         n = -n;          /* make n positive */
+     i = 0;
+     do {       /* generate digits in reverse order */
+         s[i++] = n % 10 + '0';   /* get next digit */
+     } while ((n /= 10) > 0);     /* delete it */
+     if (sign < 0)
+         s[i++] = '-';
+     s[i] = '\0';
+     reverse(s);
+}  
+void trim( char *input)
+{
+  int i, j = 0;
+	char result[7];
+  for (i = 0; input[i] != '\0'; i++) {
+    if (!isspace((unsigned char) input[i])) {
+      result[j++] = input[i];
+    }
+  }
+	 result[j] = '\0';
+	
+	for (i = 0; result[i] != '\0'; i++) {
+      input[i] = result[i];
+    }
+  input[i] = '\0';
 }

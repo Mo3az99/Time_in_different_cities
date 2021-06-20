@@ -4,12 +4,13 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include "string.h"
 #include "main.h"
 
-
-
+#include <ctype.h>
+#include <stdlib.h>
 
 #define LCDPORT         GPIO_PORTB_BASE
 #define LCDPORTENABLE   SYSCTL_PERIPH_GPIOB
@@ -31,4 +32,13 @@ void LCD_PrintLn(char i, char *s);                  //Print specific line
 void LCD_PrintJustify(char i, char *s, char *d);    //Print specific line floated left and floated right text
 void LCD_Cursor(char x, char y);                    //Set cursor
 void LCD_Yaz(char* s);
+void LCD_PrintColumn(char i , char *s);
+void LCD_intgerToString(int data);
+void LCD_print_Continous(char *s);
+void ByteToStr (char a , char *s);
+void trim( char *input);
+
+//test 
+ void reverse(char s[]);
+ void itoa(int n, char s[]);
 #endif /* LCD_H_ */

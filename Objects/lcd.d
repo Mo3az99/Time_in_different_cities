@@ -1,8 +1,8 @@
 ./objects/lcd.o: lcd.c lcd.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdbool.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h main.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdio.h \
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h main.h \
   C:\ti\TivaWare_C_Series-2.2.0.295\inc\hw_memmap.h \
   C:\ti\TivaWare_C_Series-2.2.0.295\inc\hw_gpio.h \
   C:\ti\TivaWare_C_Series-2.2.0.295\inc\hw_uart.h \
@@ -29,4 +29,5 @@
   C:\Users\lenovo\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\10.3.1\Source\include\semphr.h \
   C:\Users\lenovo\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\10.3.1\Source\include\queue.h \
   C:\Users\lenovo\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\10.3.1\Source\include\task.h \
-  uart.h
+  uart.h C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\ctype.h \
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h
