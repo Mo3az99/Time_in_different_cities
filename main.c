@@ -88,7 +88,13 @@ unsigned int Read_From_Keyboard()
 	{
 		N = UART0_Read();					// Read a char
 		printChar(N);
-		if (N == '\r') break;			// If enter
+		if (N == '\r'){ 
+			taskENTER_CRITICAL();
+			LCD_Clear(); 
+			taskEXIT_CRITICAL();
+			break;
+
+		}			// If enter
 		N = N - '0';							// Pure number (corresponding number of the char)
 		Total = 10 * Total + N;		// Total number
 	}
@@ -131,7 +137,7 @@ static void Task2(void *pvParameters)
     {
         xQueueReceive(xQueue1, &Tim, portMAX_DELAY);            //Get time
     //    Lcd_out(1, 1, cities[selection]);                       //Display city
-						LCD_Clear();  
+			
 				LCD_PrintColumn(0,cities[selection]);										// need test 
 
         Tim.hours = Tim.hours + timediff[selection];            //Hour adjustment
