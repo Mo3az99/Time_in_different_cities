@@ -29,16 +29,13 @@ void LCD_Show(unsigned char d);                     //Show a char
 void LCD_Clear(void);                               //Clear the screen
 void LCD_Print(char *s, char *d);                   //Print 2 lines
 void LCD_PrintLn(char i, char *s);                  //Print specific line
-void LCD_PrintJustify(char i, char *s, char *d);    //Print specific line floated left and floated right text
 void LCD_Cursor(char x, char y);                    //Set cursor
-void LCD_Yaz(char* s);
-void LCD_PrintColumn(char i , char *s);
-void LCD_intgerToString(int data);
-void LCD_print_Continous(char *s);
-void ByteToStr (char a , char *s);
-void trim( char *input);
+void LCD_PrintColumn(char i , char *s);							//Print in Specific Coloumn
+void LCD_intgerToString(int data);									//conert integer to string
+void LCD_print_Continous(char *s);									//continuo printing in the same line you are in
+void ByteToStr (char a , char *s);									//convert to string
+void trim( char *input);														//trim spaces
 
-//test 
- void reverse(char s[]);
- void itoa(int n, char s[]);
+ void reverse(char s[]);														//reverse string
+ void itoa(int n, char s[]);											 //integer to string
 #endif /* LCD_H_ */

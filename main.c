@@ -1,15 +1,4 @@
-
 #include "main.h"
-
-/* Dimension of the buffer */
-#define mainMAX_MSG_LEN	( 80 )
-
-/* The tasks to be created */
-static void Task1(void *pvParameters);
-static void Task2(void *pvParameters);
-static void Task3(void *pvParameters);
-
-
 
 // Cities and their time differences from London
 static char cities[][10] = {"London", "Paris", "Madrid", "Rome", "Athens", "Ankara", "Istanbul", "Cairo", "Moscow", "Tehran"};
@@ -28,7 +17,9 @@ int main( void )
 	// Create the queues
 	xQueue1 = xQueueCreate(1, 8);
   xQueue2 = xQueueCreate(1, 8);
+	// initialize clock 
   SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
+	//initialization of LCD and  UART 
   LCD_init();
 	UART0_Init();
 	// Create the tasks
@@ -36,6 +27,7 @@ int main( void )
 	xTaskCreate(Task2, "LCD Controller", 250, NULL, 1, NULL);
 	xTaskCreate(Task3, "UART Controller", 250, NULL, 1, NULL);
 
+	//Start Schedular
 	vTaskStartScheduler();
 }
 
@@ -89,8 +81,10 @@ unsigned int Read_From_Keyboard()
 		N = UART0_Read();					// Read a char
 		printChar(N);
 		if (N == '\r'){ 
+			//Enter Critical Section 
 			taskENTER_CRITICAL();
 			LCD_Clear(); 
+			//Exit Critical Section after clearing the LCD
 			taskEXIT_CRITICAL();
 			break;
 
@@ -112,7 +106,7 @@ void Read_Time(char buf[])
 	{
 		c = UART0_Read();				// Read a char
 		printChar(c);
-		if (c == '\r') break;		// If Enter
+		if (c == '\r') break;		// If Enter Break
 		buf[k] = c;							// Save char
 		k++;										// Increment pointer
 	}
@@ -130,52 +124,47 @@ static void Task2(void *pvParameters)
         unsigned char seconds;
     } AMessage;
     AMessage Tim;
-    LCD_init();       																					//Initialize LCD
+
     LCD_Clear();                				                        //Clear LCD
     selection = 0;                                              //Clear selection
     while (1)
     {
         xQueueReceive(xQueue1, &Tim, portMAX_DELAY);            //Get time
-    //    Lcd_out(1, 1, cities[selection]);                       //Display city
-			
-				LCD_PrintColumn(0,cities[selection]);										// need test 
-
+				LCD_PrintColumn(0,cities[selection]);										//Display city
         Tim.hours = Tim.hours + timediff[selection];            //Hour adjustment
         if (Tim.hours > 23)Tim.hours = Tim.hours - 24;          //if > 24
-        ByteToStr(Tim.hours, Txt);                              //Convert to string   /////
-         trim(Txt);                                             //Romve spaces    /////
+        ByteToStr(Tim.hours, Txt);                              //Convert to string   
+         trim(Txt);                                             //Romve spaces if any   
         if (Tim.hours < 10)                                     //if <10
         {
             Txt[1] = Txt[0];                                    //Insert leading 0
             Txt[0] = '0';
             Txt[2] = '\0';                                      //NULL terminator
         }
-      //  Lcd_out(2, 0, Txt);                                     //display hours
-				LCD_PrintColumn(1,Txt);
-				LCD_Show(':');
-      //  Lcd_out_CP(":");                                        //Colon
 
-        ByteToStr(Tim.minutes, Txt);                            //To strong
-        trim(Txt);                                             //remove spaves
+				LCD_PrintColumn(1,Txt);																		//display hours
+				LCD_Show(':');																						//Colon
+
+        ByteToStr(Tim.minutes, Txt);                            //Convert To strong
+        trim(Txt);                                             //remove spaces if any
         if (Tim.minutes < 10)                                   //if < 10
         {
             Txt[1] = Txt[0];                                    //Insert leading 0
             Txt[0] = '0';
             Txt[2] = '\0';                                      //NULL terminator
         }
-      //  Lcd_out_CP(Txt);                                        //Display minutes
 				LCD_print_Continous(Txt);																//Display minutes
 				LCD_Show(':');                                        	//colon
 
-        ByteToStr(Tim.seconds, Txt);                            //To string 
-        trim(Txt);                                             //remove spaces
+        ByteToStr(Tim.seconds, Txt);                            //Convert To string 
+        trim(Txt);                                             //remove spaces if any
         if (Tim.seconds < 10)                                   //if < 10
         {
             Txt[1] = Txt[0];                                    //Insert leading 0
             Txt[0] = '0';
             Txt[2] = '\0';                                      //NULL terminator
         }
-        LCD_print_Continous(Txt);                                        //Display seconds 
+        LCD_print_Continous(Txt);                                //Display seconds 
     }
 }
 
@@ -191,9 +180,6 @@ static void Task3(void *pvParameters)
 	} AMessage;
 
 	AMessage Tim;
-	
-	//UART0_Init();
-	
 	UART0_Write_Text("Time in Different Countries\n\r");
 	UART0_Write_Text("===========================\n\r");
 	UART0_Write_Text("Enter the time in London (hh::mm::ss): ");
@@ -207,7 +193,6 @@ static void Task3(void *pvParameters)
 	
 	for(;;)
 	{
-			//take semaphore here
 		UART0_Write_Text("\n\r\n\rSelect a City:");
 		for(k = 0; k < 10; k++)
 		{
